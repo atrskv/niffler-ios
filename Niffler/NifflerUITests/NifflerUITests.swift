@@ -3,6 +3,9 @@ import XCTest
 final class NifflerUITests: XCTestCase {
         
     let app = XCUIApplication()
+    let login = "testLoginYetAnother"
+    let password = "secret"
+
 
         func testRegistration() throws {
             // GIVEN
@@ -14,19 +17,20 @@ final class NifflerUITests: XCTestCase {
             
             let usernameField = registerScreen.textFields["userNameTextField"]
             usernameField.tap()
-            usernameField.typeText("testUser333")
-            
-            let password = "secret"
-            
+            usernameField.typeText(login)
+            app.keyboards.buttons["Return"].tap()
+                        
             registerScreen.buttons["passwordTextField"].tap()
             let passwordField = registerScreen.textFields["passwordTextField"]
             passwordField.tap()
             passwordField.typeText(password)
+            app.keyboards.buttons["Return"].tap()
             
             registerScreen.buttons["confirmPasswordTextField"].tap()
             let confirmPasswordField = registerScreen.textFields["confirmPasswordTextField"]
             confirmPasswordField.tap()
             confirmPasswordField.typeText(password)
+            app.keyboards.buttons["Return"].tap()
             
             registerScreen.buttons["Sign Up"].tap()
             
@@ -36,8 +40,6 @@ final class NifflerUITests: XCTestCase {
         
         func testRegistrationFromLoginFormData() throws {
             // GIVEN
-            let login = "testLogin"
-            let password = "secret"
             app.launch()
             
             // WHEN
@@ -46,15 +48,16 @@ final class NifflerUITests: XCTestCase {
             let loginField = loginScreen.textFields["userNameTextField"]
             loginField.tap()
             loginField.typeText(login)
+            app.keyboards.buttons["Return"].tap()
             
             let passwordField = loginScreen.textFields["passwordTextField"]
         
             loginScreen.buttons["passwordTextField"].tap()
             passwordField.tap()
             passwordField.typeText(password)
+            app.keyboards.buttons["Return"].tap()
             
             // THEN
-            app.keyboards.buttons["Return"].tap()
             app.staticTexts["Create new account"].tap()
             
             let registerScreen = app.otherElements.containing(.staticText, identifier: "Sign Up").element
