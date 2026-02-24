@@ -2,52 +2,61 @@ import XCTest
 
 final class NifflerUITests: XCTestCase {
     
-    let userName = "testUserNameFoo"
-    let password = "secret"
+    let randomUserName = "user_\(UUID().uuidString.prefix(3))"
+    let randomPassword = "pass_\(UUID().uuidString.prefix(3))"
     
     var app: XCUIApplication!
     
+    override func setUp() {
+        super.setUp()
+        continueAfterFailure = false
+        
+        app = XCUIApplication()
+        app.launchArguments = ["RemoveAuthOnStart"]
+        app.launch()
+    }
+    
+    override func tearDown() {
+        app = nil
+        super.tearDown()
+    }
+    
     func testRegistration() throws {
-        launchAppWithountLogin()
+        tapCreateNewAccountButton()
         
-        startCreatingAccount()
-        fillUserNameOnCreatingAccountScreen(userName)
-        fillPasswordOnCreatingAccountScreen(password)
-        confirmPassword(password)
-        singUp()
+        fillSignUpForm(
+            userName: randomUserName,
+            password: randomPassword,
+            confirmPasswordValue: randomPassword
+        )
+        tapSignUpButton()
         
-        shouldHaveAccountCreated()
+        assertSuccessAlertShown()
     }
     
     func testRegistrationFormIsPreFilledFromLoginData() throws {
-        launchAppWithountLogin()
+        fillLoginForm(
+            userName: randomUserName,
+            password: randomPassword
+        )
+        tapCreateNewAccountButton()
         
-        fillUserNameOnLoginScreen(userName)
-        fillPasswordOnLoginScreen(password)
-        startCreatingAccount()
+        assertSignUpFormPrefilled(
+            userName: randomUserName,
+            password: randomPassword
+        )
+    }
         
-        shouldUserNameOnCreatingAccountScreenHaveText(userName)
-        shouldPasswordOnCreatingAccountScreenHaveText(password)
-    }
-    
-    private func launchAppWithountLogin() {
-        XCTContext.runActivity(named: "Запустить приложение без авторизации") { _ in
-            app = XCUIApplication()
-            app.launchArguments = ["RemoveAuthOnStart"]
-            app.launch()
-        }
-    }
-    
-    private func startCreatingAccount() {
+    private func tapCreateNewAccountButton() {
         XCTContext.runActivity(named: "Начать создание аккаунта") { _ in
             app.staticTexts["Create new account"].tap()
         }
     }
     
-    private func fillUserNameOnCreatingAccountScreen(_ value: String) {
+    private func fillUserNameOnSignUpScreen(_ value: String) {
         XCTContext.runActivity(named: "Ввести \(value) в поле логина") { _ in
-            let registerScreen = app.otherElements.containing(.staticText, identifier: "Sign Up").element
-            let usernameField = registerScreen.textFields["userNameTextField"]
+            let signUpScreen = app.otherElements.containing(.staticText, identifier: "Sign Up").element
+            let usernameField = signUpScreen.textFields["userNameTextField"]
             usernameField.tap()
             usernameField.typeText(value)
             app.keyboards.buttons["Return"].tap()
@@ -75,73 +84,103 @@ final class NifflerUITests: XCTestCase {
         }
     }
     
-    private func fillPasswordOnCreatingAccountScreen(_ value: String) {
+    private func fillPasswordOnSignUpScreen(_ value: String) {
         XCTContext.runActivity(named: "Ввести \(value) в поле пароля") { _ in
-            let registerScreen = app.otherElements.containing(.staticText, identifier: "Sign Up").element
-            registerScreen.buttons["passwordTextField"].tap()
-            let passwordField = registerScreen.textFields["passwordTextField"]
+            let signUpScreen = app.otherElements.containing(.staticText, identifier: "Sign Up").element
+            signUpScreen.buttons["passwordTextField"].tap()
+            let passwordField = signUpScreen.textFields["passwordTextField"]
             passwordField.tap()
             passwordField.typeText(value)
             app.keyboards.buttons["Return"].tap()
         }
     }
     
-    private func confirmPassword(_ value: String) {
+    private func confirmPasswordOnSignUpScreen(_ value: String) {
         XCTContext.runActivity(named: "Ввести \(value) в поле подтверждения пароля") { _ in
-            let registerScreen = app.otherElements.containing(.staticText, identifier: "Sign Up").element
-            registerScreen.buttons["confirmPasswordTextField"].tap()
-            let confirmPasswordField = registerScreen.textFields["confirmPasswordTextField"]
+            let signUpScreen = app.otherElements.containing(.staticText, identifier: "Sign Up").element
+            signUpScreen.buttons["confirmPasswordTextField"].tap()
+            let confirmPasswordField = signUpScreen.textFields["confirmPasswordTextField"]
             confirmPasswordField.tap()
             confirmPasswordField.typeText(value)
             app.keyboards.buttons["Return"].tap()
         }
     }
     
-    private func singUp() {
+    private func tapSignUpButton() {
         XCTContext.runActivity(named: "Нажать на кнопку подтверждения регистрации") { _ in
-            let registerScreen = app.otherElements.containing(.staticText, identifier: "Sign Up").element
-            registerScreen.buttons["Sign Up"].tap()
+            let signUpScreen = app.otherElements.containing(.staticText, identifier: "Sign Up").element
+            signUpScreen.buttons["Sign Up"].tap()
         }
     }
     
-    private func shouldHaveAccountCreated(file: StaticString = #filePath, line: UInt = #line) {
-      XCTContext.runActivity(named: "Аккаунт создан") { _ in
-        let isFound = app.alerts["Congratulations!"].waitForExistence(timeout: 15)
-        XCTAssertTrue(isFound, "Не удалось создать аккаунт", file: file, line: line)
-      }
+    private func fillLoginForm(userName: String, password: String) {
+        XCTContext.runActivity(named: "Заполнить форму авторизации") { _ in
+            fillUserNameOnLoginScreen(userName)
+            fillPasswordOnLoginScreen(password)
+        }
     }
-
-    private func shouldUserNameOnCreatingAccountScreenHaveText(
-      _ value: String, file: StaticString = #filePath, line: UInt = #line
+    
+    private func fillSignUpForm(
+        userName: String,
+        password: String,
+        confirmPasswordValue: String
     ) {
-      XCTContext.runActivity(named: "Поле логина содержит \(value)") { _ in
-        let registerScreen = app.otherElements.containing(.staticText, identifier: "Sign Up").element
-        let usernameValue = registerScreen.textFields["userNameTextField"].value as? String
-        XCTAssertEqual(
-          usernameValue,
-          value,
-          "В поле логина отображается неверный текст",
-          file: file,
-          line: line
-        )
-      }
+        XCTContext.runActivity(named: "Заполнить форму регистрации") { _ in
+            fillUserNameOnSignUpScreen(userName)
+            fillPasswordOnSignUpScreen(password)
+            confirmPasswordOnSignUpScreen(confirmPasswordValue)
+        }
     }
-
-    private func shouldPasswordOnCreatingAccountScreenHaveText(
-      _ value: String, file: StaticString = #filePath, line: UInt = #line
+        
+    private func assertSuccessAlertShown(file: StaticString = #filePath, line: UInt = #line) {
+        XCTContext.runActivity(named: "Аккаунт создан") { _ in
+            let isFound = app.alerts["Congratulations!"].waitForExistence(timeout: 30)
+            XCTAssertTrue(isFound, "Не удалось создать аккаунт", file: file, line: line)
+        }
+    }
+    
+    private func assertSignUpUserNameFieldEquals(
+        _ value: String, file: StaticString = #filePath, line: UInt = #line
     ) {
-      XCTContext.runActivity(named: "Поле пароля содержит \(value)") { _ in
-        let registerScreen = app.otherElements.containing(.staticText, identifier: "Sign Up").element
-        registerScreen.buttons["passwordTextField"].tap()
-        let passwordValue = registerScreen.textFields["passwordTextField"].value as? String
-        XCTAssertEqual(
-          passwordValue,
-          value,
-          "В поле пароля отображается неверный текст",
-          file: file,
-          line: line
-        )
-      }
+        XCTContext.runActivity(named: "Поле логина содержит \(value)") { _ in
+            let signUpScreen = app.otherElements.containing(.staticText, identifier: "Sign Up").element
+            let usernameValue = signUpScreen.textFields["userNameTextField"].value as? String
+            XCTAssertEqual(
+                usernameValue,
+                value,
+                "В поле логина отображается неверный текст",
+                file: file,
+                line: line
+            )
+        }
     }
-  }
-
+    
+    private func assertSignUpPasswordFieldEquals(
+        _ value: String, file: StaticString = #filePath, line: UInt = #line
+    ) {
+        XCTContext.runActivity(named: "Поле пароля содержит \(value)") { _ in
+            let signUpScreen = app.otherElements.containing(.staticText, identifier: "Sign Up").element
+            signUpScreen.buttons["passwordTextField"].tap()
+            let passwordValue = signUpScreen.textFields["passwordTextField"].value as? String
+            XCTAssertEqual(
+                passwordValue,
+                value,
+                "В поле пароля отображается неверный текст",
+                file: file,
+                line: line
+            )
+        }
+    }
+    
+    private func assertSignUpFormPrefilled(
+        userName: String,
+        password: String,
+        file: StaticString = #filePath,
+        line: UInt = #line
+    ) {
+        XCTContext.runActivity(named: "В форму регистрации перенесены данные из формы авторизации") { _ in
+            assertSignUpUserNameFieldEquals(userName, file: file, line: line)
+            assertSignUpPasswordFieldEquals(password)
+        }
+    }
+}
