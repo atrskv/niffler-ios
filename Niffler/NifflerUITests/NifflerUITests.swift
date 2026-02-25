@@ -39,7 +39,6 @@ final class NifflerUITests: XCTestCase {
             userName: randomUserName,
             password: randomPassword
         )
-        tapCreateNewAccountButton()
         
         assertSignUpFormPrefilled(
             userName: randomUserName,
@@ -117,6 +116,7 @@ final class NifflerUITests: XCTestCase {
         XCTContext.runActivity(named: "Заполнить форму авторизации") { _ in
             fillUserNameOnLoginScreen(userName)
             fillPasswordOnLoginScreen(password)
+            tapCreateNewAccountButton()
         }
     }
     
