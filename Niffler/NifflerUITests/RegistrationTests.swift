@@ -13,15 +13,12 @@ final class RegistrationTests: TestCase {
   }
 
   func testRegistration() throws {
-
     loginPage.tapCreateNewAccountButton()
 
-    loginPage.fillSignUpForm(
+    loginPage.registerUser(
       userName: randomUserName,
       password: randomPassword,
-      confirmPasswordValue: randomPassword
     )
-    loginPage.tapSignUpButton()
 
     loginPage.assertSuccessAlertShown()
   }
@@ -29,7 +26,8 @@ final class RegistrationTests: TestCase {
   func testRegistrationFormIsPreFilledFromLoginData() throws {
     loginPage.fillLoginForm(
       userName: randomUserName,
-      password: randomPassword
+      password: randomPassword,
+      goToSignUp: true
     )
 
     loginPage.assertSignUpFormPrefilled(

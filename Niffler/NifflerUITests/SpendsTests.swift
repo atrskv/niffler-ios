@@ -1,23 +1,23 @@
 import XCTest
 
 final class SpendsTests: TestCase {
-    
-    let randomSpendAmount = "\(Int.random(in: 100...999))"
-    let randomSpendDescription = "cat_\(UUID().uuidString.prefix(3))"
-    let randomUserName = "user_\(UUID().uuidString.prefix(3))"
-    let randomPassword = "pass_\(UUID().uuidString.prefix(3))"
-    let randomCategoryName = "cat_\(UUID().uuidString.prefix(3))"
 
-    var loginPage: LoginPage!
-    var spendsPage: SpendsPage!
-    var profilePage: ProfilePage!
-    
-    override func setUp() {
-        super.setUp()
-        loginPage = LoginPage(app: app)
-        spendsPage = SpendsPage(app: app)
-        profilePage = ProfilePage(app: app)
-    }
+  let randomSpendAmount = "\(Int.random(in: 100...999))"
+  let randomSpendDescription = "cat_\(UUID().uuidString.prefix(3))"
+  let randomUserName = "user_\(UUID().uuidString.prefix(3))"
+  let randomPassword = "pass_\(UUID().uuidString.prefix(3))"
+  let randomCategoryName = "cat_\(UUID().uuidString.prefix(3))"
+
+  var loginPage: LoginPage!
+  var spendsPage: SpendsPage!
+  var profilePage: ProfilePage!
+
+  override func setUp() {
+    super.setUp()
+    loginPage = LoginPage(app: app)
+    spendsPage = SpendsPage(app: app)
+    profilePage = ProfilePage(app: app)
+  }
 
   func testAddSpend() throws {
 
@@ -25,7 +25,6 @@ final class SpendsTests: TestCase {
     loginPage.loginAsFreshUser(
       userName: randomUserName,
       password: randomPassword,
-      confirmPasswordValue: randomPassword
     )
     spendsPage.assertStatisticsScreenShown()
 
@@ -45,7 +44,7 @@ final class SpendsTests: TestCase {
 
     // WHEN
     spendsPage.openProfile()
-      
+
     // THEN
     profilePage.assertCategoryExists(name: randomCategoryName)
 
@@ -57,7 +56,6 @@ final class SpendsTests: TestCase {
     loginPage.loginAsFreshUser(
       userName: randomUserName,
       password: randomPassword,
-      confirmPasswordValue: randomPassword
     )
     spendsPage.assertStatisticsScreenShown()
 
