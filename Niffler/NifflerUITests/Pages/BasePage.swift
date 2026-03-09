@@ -1,31 +1,37 @@
 import XCTest
 
-class Page {
-
-  let app: XCUIApplication
+class BasePage {
 
   init(app: XCUIApplication) {
     self.app = app
   }
 
-  func expandMenu() {
+  let app: XCUIApplication
+
+  @discardableResult
+  func expandMenu() -> Self {
     XCTContext.runActivity(named: "Раскрыть верхнее меню") { _ in
       let menuButton = app.images["ic_menu"]
       XCTAssertTrue(menuButton.waitForExistence(timeout: 5))
       menuButton.tap()
     }
+    return self
   }
 
+  @discardableResult
   func foldMenu(
     file: StaticString = #filePath,
     line: UInt = #line
-  ) {
+  ) -> Self {
     XCTContext.runActivity(named: "Закрыть верхнее меню") { _ in
       app.images["ic_cross"].tap()
     }
+    return self
+
   }
 
-  func openProfile() {
+  @discardableResult
+  func openProfile() -> Self {
     XCTContext.runActivity(named: "Открыть профиль") { _ in
       expandMenu()
       let profileButton = app.buttons["Profile"]
@@ -33,5 +39,6 @@ class Page {
         profileButton.waitForExistence(timeout: 5))
       profileButton.tap()
     }
+    return self
   }
 }
