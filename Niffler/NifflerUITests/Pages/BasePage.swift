@@ -19,18 +19,6 @@ class BasePage {
   }
 
   @discardableResult
-  func foldMenu(
-    file: StaticString = #filePath,
-    line: UInt = #line
-  ) -> Self {
-    XCTContext.runActivity(named: "Закрыть верхнее меню") { _ in
-      app.images["ic_cross"].tap()
-    }
-    return self
-
-  }
-
-  @discardableResult
   func openProfile() -> Self {
     XCTContext.runActivity(named: "Открыть профиль") { _ in
       expandMenu()

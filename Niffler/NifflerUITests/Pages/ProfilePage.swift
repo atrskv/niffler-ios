@@ -10,6 +10,7 @@ class ProfilePage: BasePage {
     XCTContext.runActivity(named: "Закрыть профиль") { _ in
       app.buttons["Close"].tap()
     }
+    app.images["ic_cross"].tap()
     return self
   }
 

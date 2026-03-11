@@ -148,7 +148,9 @@ class LoginPage: BasePage {
   }
 
   @discardableResult
-  func loginAsFreshUser(userName: String, password: String) -> Self {
+  func loginAsFreshUser(
+    userName: String, password: String, file: StaticString = #filePath, line: UInt = #line
+  ) -> Self {
     XCTContext.runActivity(named: "Авторизоваться под новым пользователем") { _ in
       registerUser(userName: userName, password: password)
 
@@ -156,6 +158,11 @@ class LoginPage: BasePage {
 
       tapLoginButtonInSuccessAlert()
       tapLoginButton()
+
+      let isFound = app.staticTexts["Statistics"].waitForExistence(timeout: 30)
+      XCTAssertTrue(
+        isFound, "Не удалось авторизоваться под новым пользователем", file: file, line: line)
+
     }
     return self
 
@@ -242,6 +249,5 @@ class LoginPage: BasePage {
       assertSignUpPasswordFieldEquals(password)
     }
     return self
-
   }
 }

@@ -24,7 +24,8 @@ class SpendsPage: BasePage {
 
   @discardableResult
   func addSpend(
-    amount: String, description: String, categoryName: String? = nil
+    amount: String, description: String, categoryName: String? = nil,
+    file: StaticString = #filePath, line: UInt = #line
   ) -> Self {
     XCTContext.runActivity(named: "Добавить трату") { _ in
       let spendsCount = app.otherElements
@@ -49,6 +50,10 @@ class SpendsPage: BasePage {
       app.textFields["descriptionField"].tap()
       app.textFields["descriptionField"].typeText(description)
       app.buttons["Add"].tap()
+
+      let isFound = app.staticTexts["Statistics"].waitForExistence(timeout: 30)
+      XCTAssertTrue(
+        isFound, "Не удалось авторизоваться под новым пользователем", file: file, line: line)
     }
     return self
   }
@@ -89,12 +94,4 @@ class SpendsPage: BasePage {
     return self
   }
 
-  @discardableResult
-  func assertStatisticsScreenShown(file: StaticString = #filePath, line: UInt = #line) -> Self {
-    XCTContext.runActivity(named: "Пользователь находится на экране \"Statistics\"") { _ in
-      let isFound = app.staticTexts["Statistics"].waitForExistence(timeout: 30)
-      XCTAssertTrue(isFound, "Не удалось перейти к экрану \"Statistics\"", file: file, line: line)
-    }
-    return self
-  }
 }

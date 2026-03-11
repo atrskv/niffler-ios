@@ -9,25 +9,16 @@ final class RegistrationTests: BaseTestCase {
     loginPage
       .tapCreateNewAccountButton()
 
-      .registerUser(
-        userName: randomUserName,
-        password: randomPassword,
-      )
+      .registerUser(userName: randomUserName, password: randomPassword)
 
       .assertSuccessAlertShown()
   }
 
   func testRegistrationFormIsPreFilledFromLoginData() throws {
     loginPage
-      .fillLoginForm(
-        userName: randomUserName,
-        password: randomPassword,
-        goToSignUp: true
-      )
+      .fillLoginForm(userName: randomUserName, password: randomPassword, goToSignUp: true)
 
-      .assertSignUpFormPrefilled(
-        userName: randomUserName,
-        password: randomPassword
+      .assertSignUpFormPrefilled(userName: randomUserName, password: randomPassword
       )
   }
 }

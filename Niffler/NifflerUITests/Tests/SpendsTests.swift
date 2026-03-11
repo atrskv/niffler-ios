@@ -11,25 +11,17 @@ final class SpendsTests: BaseTestCase {
   func testAddSpend() throws {
 
     // GIVEN
-    loginPage.loginAsFreshUser(
-      userName: randomUserName,
-      password: randomPassword,
-    )
-    spendsPage.assertStatisticsScreenShown()
+    loginPage.loginAsFreshUser(userName: randomUserName, password: randomPassword)
 
-      // WHEN
+    // WHEN
+    spendsPage
       .addSpend(
-        amount: randomSpendAmount,
-        description: randomSpendDescription,
+        amount: randomSpendAmount, description: randomSpendDescription,
         categoryName: randomCategoryName
       )
 
       // THEN
-      .assertStatisticsScreenShown()
-      .assertSpendExists(
-        amount: randomSpendAmount,
-        description: randomSpendDescription
-      )
+      .assertSpendExists(amount: randomSpendAmount, description: randomSpendDescription)
 
       // WHEN
       .openProfile()
@@ -42,20 +34,14 @@ final class SpendsTests: BaseTestCase {
   func testRemoveSpendsCategory() throws {
 
     // GIVEN
-    loginPage.loginAsFreshUser(
-      userName: randomUserName,
-      password: randomPassword,
+    loginPage.loginAsFreshUser(userName: randomUserName, password: randomPassword)
+    spendsPage.addSpend(
+      amount: randomSpendAmount, description: randomSpendDescription,
+      categoryName: randomCategoryName
     )
-    spendsPage.assertStatisticsScreenShown()
 
-      .addSpend(
-        amount: randomSpendAmount,
-        description: randomSpendDescription,
-        categoryName: randomCategoryName
-      )
-
-      // WHEN
-      .openProfile()
+    // WHEN
+    .openProfile()
 
     profilePage.removeCategory(name: randomCategoryName)
 
@@ -63,9 +49,9 @@ final class SpendsTests: BaseTestCase {
       .assertCategoryNotExists(name: randomCategoryName)
 
     // WHEN
-    profilePage.closeProfile()
-      .foldMenu()
-    spendsPage.assertStatisticsScreenShown()
+    profilePage
+      .closeProfile()
+    spendsPage
       .tapAddSpendButton()
 
       // THEN
