@@ -24,7 +24,7 @@ class SpendsPage: BasePage {
 
   @discardableResult
   func addSpend(
-    amount: String, description: String, categoryName: String? = nil,
+    amount: String, description: String, category: String? = nil,
     file: StaticString = #filePath, line: UInt = #line
   ) -> Self {
     XCTContext.runActivity(named: "Добавить трату") { _ in
@@ -36,8 +36,8 @@ class SpendsPage: BasePage {
 
       let categoryToUse: String
 
-      if let categoryName {
-        categoryToUse = categoryName
+      if let category {
+        categoryToUse = category
       } else {
         categoryToUse = "cat_\(UUID().uuidString.prefix(3))"
       }
