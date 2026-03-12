@@ -1,8 +1,9 @@
 import XCTest
 
-class SpendsPage: Page {
+class SpendsPage: BasePage {
 
-  func addNewCategory(_ name: String) {
+  @discardableResult
+  func addNewCategory(_ name: String) -> Self {
     XCTContext.runActivity(named: "Добавить категорию") { _ in
       app.buttons["Select category"].tap()
 
@@ -10,17 +11,22 @@ class SpendsPage: Page {
       addCategoryAlert.textFields["Name"].typeText(name)
       addCategoryAlert.buttons["Add"].tap()
     }
+    return self
   }
 
-  func tapAddSpendButton() {
+  @discardableResult
+  func tapAddSpendButton() -> Self {
     XCTContext.runActivity(named: "Нажать на кнопку добавления траты") { _ in
       app.buttons["addSpendButton"].tap()
     }
+    return self
   }
 
+  @discardableResult
   func addSpend(
-    amount: String, description: String, categoryName: String? = nil
-  ) {
+    amount: String, description: String, category: String? = nil,
+    file: StaticString = #filePath, line: UInt = #line
+  ) -> Self {
     XCTContext.runActivity(named: "Добавить трату") { _ in
       let spendsCount = app.otherElements
         .matching(identifier: "spendsList")
@@ -30,8 +36,8 @@ class SpendsPage: Page {
 
       let categoryToUse: String
 
-      if let categoryName {
-        categoryToUse = categoryName
+      if let category {
+        categoryToUse = category
       } else {
         categoryToUse = "cat_\(UUID().uuidString.prefix(3))"
       }
@@ -44,7 +50,12 @@ class SpendsPage: Page {
       app.textFields["descriptionField"].tap()
       app.textFields["descriptionField"].typeText(description)
       app.buttons["Add"].tap()
+
+      let isFound = app.staticTexts["Statistics"].waitForExistence(timeout: 30)
+      XCTAssertTrue(
+        isFound, "Не удалось авторизоваться под новым пользователем", file: file, line: line)
     }
+    return self
   }
 
   func assertSpendExists(
@@ -53,7 +64,7 @@ class SpendsPage: Page {
     currency: String = "₸",
     file: StaticString = #filePath,
     line: UInt = #line
-  ) {
+  ) -> Self {
     XCTContext.runActivity(named: "Трата создана") {
       _ in
 
@@ -69,21 +80,18 @@ class SpendsPage: Page {
         line: line
       )
     }
+    return self
   }
 
-  func assertNoCategoriesForSelect(file: StaticString = #filePath, line: UInt = #line) {
+  @discardableResult
+  func assertNoCategoriesForSelect(file: StaticString = #filePath, line: UInt = #line) -> Self {
     XCTContext.runActivity(named: "Отсутствуют категории для выбора") { _ in
       let categoryButton = app.buttons["Select category"]
       XCTAssertEqual(
         categoryButton.label, "+ New category", "Кнопка должна показывать '+ New category'",
         file: file, line: line)
     }
+    return self
   }
 
-  func assertStatisticsScreenShown(file: StaticString = #filePath, line: UInt = #line) {
-    XCTContext.runActivity(named: "Пользователь находится на экране \"Statistics\"") { _ in
-      let isFound = app.staticTexts["Statistics"].waitForExistence(timeout: 30)
-      XCTAssertTrue(isFound, "Не удалось перейти к экрану \"Statistics\"", file: file, line: line)
-    }
-  }
 }
